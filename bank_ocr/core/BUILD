@@ -41,19 +41,34 @@ cc_test(
 )
 
 cc_library(
-    name = "bank_ocr",
+    name = "line_set",
     hdrs = [
         "line_set.h",
-        "account_number.h",
-        "illformed_number_error.h",        
+        "illformed_number_error.h",
     ],
     srcs = [
         "line_set.cc",
-        "account_number.cc",
-        "illformed_number_error.cc",        
+        "illformed_number_error.cc",
     ],
+    deps = [":line"],
+)
+
+cc_test(
+    name = "line_set_test",
+    srcs = ["line_set_test.cc"],
     deps = [
-      ":line",
+        ":line_set",
+        "@xunit_cut//:cut",       
+        "@xunit_cut//:cut_main",        
+    ],
+)
+
+cc_library(
+    name = "account_number",
+    hdrs = ["account_number.h"],
+    srcs = ["account_number.cc"],
+    deps = [
+      ":line_set",
       ":check_sum",
     ],
 )
@@ -62,7 +77,7 @@ cc_test(
     name = "account_number_test",
     srcs = ["account_number_test.cc"],
     deps = [
-        ":bank_ocr",
+        ":account_number",
         "@xunit_cut//:cut",       
         "@xunit_cut//:cut_main",        
     ],
@@ -71,5 +86,5 @@ cc_test(
 cc_binary(
     name = "main",
     srcs = ["main.cc"],
-    deps = [ ":bank_ocr"],
+    deps = [ ":account_number"],
 )

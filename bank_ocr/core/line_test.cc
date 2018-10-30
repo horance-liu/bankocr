@@ -30,6 +30,15 @@ FIXTURE(LineTest) {
     );
   }
 
+  TEST("illegible digit: | is not (!1l)") {
+    expect(
+        "  l",
+        "  1",
+        "  !",
+        "?"
+    );
+  }
+
   TEST("double digits") {
     expect(
         " _  _ ",
@@ -48,21 +57,21 @@ FIXTURE(LineTest) {
     );
   }
 
+  struct Collector : Alternative {
+    void matches(const std::vector<std::string>& expected) const {
+      ASSERT_THAT(alts, eq(expected));
+    }
+
+  private:
+    void accept(const std::string& alt) override {
+        alts.emplace_back(alt);
+    }
+
+  private:
+    std::vector<std::string> alts;
+  };
+
   TEST("alternatives") {
-    struct Collector : Alternative {
-      void matches(const std::vector<std::string>& expected) const {
-        ASSERT_THAT(alts, eq(expected));
-      }
-
-    private:
-      void accept(const std::string& alt) override {
-          alts.emplace_back(alt);
-      }
-
-    private:
-      std::vector<std::string> alts;
-    };
-
     Collector collector;
 
     line(
