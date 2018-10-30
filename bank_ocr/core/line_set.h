@@ -3,18 +3,20 @@
 
 #include "bank_ocr/core/line.h"
 
-using Lines = std::vector<std::string>;
-
 struct LineSet {
+  using Lines = std::deque<std::string>;
+
   LineSet(Lines& lines);
 
+  bool isEmpty() const;
   void merge(Line&) const;
 
 private:
   void initialize(Lines& lines);
 
 private:
-  std::vector<Line> lines;
+  bool empty;
+  std::deque<Line> lines;
 };
 
 #endif

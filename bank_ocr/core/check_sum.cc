@@ -3,7 +3,7 @@
 namespace {
   int sum(const std::string& value) {
     auto result = 0;
-    for (decltype(value.size()) i = 0; i != value.size(); ++i) {
+    for (std::string::size_type i = 0; i != value.size(); ++i) {
       result += (value[i] - '0') * (value.size() - i);
     }
     return result;

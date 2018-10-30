@@ -6,13 +6,17 @@
 
 struct AccountNumber {
   void parse(const LineSet&);
-  std::string value() const;
+
+  std::string str() const;
+  bool valid() const;
 
 private:
   void initialize(LineSet&);
+  std::string guess() const;
 
 private:
   Line merged;
+  std::string value;
 };
 
 std::istream& operator>>(std::istream&, AccountNumber&);

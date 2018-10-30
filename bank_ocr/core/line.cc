@@ -2,12 +2,14 @@
 #include <regex>
 #include <unordered_map>
 
+Line::Line() {}
+
 const std::regex re_num("...");
 
 Line::Line(const std::string& line) {
   std::sregex_iterator beg(line.cbegin(), line.cend(), re_num), end;
   std::for_each(beg, end, [this](auto& m) {
-    nums.push_back(m.str());
+    nums.emplace_back(m.str());
   });
 }
 
@@ -29,7 +31,7 @@ void Line::merge(const Line& rhs) {
 }
 
 namespace {
-  const std::unordered_map<std::string, std::string> to_digits = {
+  const std::unordered_map<std::string, std::string> digits = {
     {
       " _ "
       "| |"
@@ -91,14 +93,57 @@ namespace {
     },
   };
 
-  std::string recognize(const std::string& scanned) {
-    auto found = to_digits.find(scanned);
-    return found != to_digits.end() ? found->second : "?";
+  std::string recognize(const std::string& digit) {
+    auto found = digits.find(digit);
+    return found != digits.end() ? found->second : "?";
+  }
+
+  std::string recognize(const std::deque<std::string>& nums) {
+    std::string result;
+    for (auto& num : nums) {
+      result += recognize(num);
+    }
+    return result;
   }
 }
 
-void Line::join(std::string& result) const {
-  for (auto& num : nums) {
-    result += recognize(num);
+std::string Line::value() const {
+  return recognize(nums);
+}
+
+namespace {
+  template <typename F>
+  void scannables(F f) {
+    for (auto& i : digits) {
+      f(i.first);
+    }
+  }
+
+  int diff(const std::string& lhs, const std::string& rhs) {
+    auto num = 0;
+    for (std::string::size_type i = 0; i != lhs.size(); ++i) {
+      if (lhs[i] != rhs[i]) num++;
+    }
+    return num;
+  }
+
+  template <typename F>
+  void select(const std::string& num, F f) {
+    scannables([&num, &f](auto& digit) {
+      if (diff(digit, num) == 1) {
+        f(digit);
+      }
+    });
+  }
+}
+
+void Line::alternatives(Alternative& alt) const {
+  for (std::deque<std::string> prefix, suffix(nums); !suffix.empty();) {
+    auto num = suffix.front();
+    suffix.pop_front();
+    select(num, [&alt, &prefix, &suffix](auto& guess) {
+      alt.accept(recognize(prefix) + recognize(guess) + recognize(suffix));
+    });
+    prefix.push_back(num);
   }
 }
