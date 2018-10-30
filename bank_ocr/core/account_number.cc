@@ -1,5 +1,6 @@
 #include "bank_ocr/core/account_number.h"
 #include "bank_ocr/core/check_sum.h"
+#include "bank_ocr/core/line_set.h"
 
 void AccountNumber::parse(const LineSet& lines) {
   line.reset();

@@ -1,5 +1,6 @@
 #include "bank_ocr/core/account_number.h"
 #include "bank_ocr/core/illformed_number_error.h"
+#include "bank_ocr/core/line_set.h"
 #include "cut/cut.hpp"
 
 USING_CUT_NS
