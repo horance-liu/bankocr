@@ -29,9 +29,7 @@ cc_library(
 cc_binary(
     name = "main",
     srcs = ["main.cc"],
-    deps = [
-        ":bank_ocr",
-    ],
+    deps = [ ":bank_ocr"],
 )
 
 cc_test(

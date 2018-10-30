@@ -1,6 +1,7 @@
 workspace(name = "bank_ocr")
 
 # using cut for xunit test framework.
+# github: https://github.com/horance-liu/cut
 # curl -L https://github.com/horance-liu/cut/archive/1ce2bed5cbf7e9a282eee546ff5637a040e42abe.tar.gz | sha256sum
 http_archive(
     name = "xunit_cut",

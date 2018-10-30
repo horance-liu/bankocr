@@ -2,8 +2,6 @@
 #include "bank_ocr/core/illformed_number_error.h"
 #include <set>
 #include <regex>
-#include <algorithm>
-#include <iostream>
 
 namespace {
   void assert_true(bool expr, const char* msg) {
@@ -27,7 +25,7 @@ namespace {
   const std::regex re_line("^[ |_]+$");
 
   void checkChars(LineSet::Lines& lines) {
-    allof(lines, "should contain only [ |_]", [](auto& line) {
+    allof(lines, "should contain [ |_]", [](auto& line) {
       return std::regex_match(line, re_line);
     });
   }
@@ -43,7 +41,7 @@ namespace {
     foreach(lines, [&lens](auto& line) {
       lens.insert(line.size());
     });
-    assert_true(lens.size() == 1, "length should be the same");
+    assert_true(lens.size() == 1, "length should be same");
   }
 
   void normalize(LineSet::Lines& lines) {

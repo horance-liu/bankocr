@@ -15,7 +15,7 @@ private:
   std::string guess() const;
 
 private:
-  Line merged;
+  Line line;
   std::string value;
 };
 

@@ -2,8 +2,8 @@
 
 ### Dependences 
 
-- build tools: bazel
-- C++14 
+- build tools: [bazel](https://www.bazel.build)
+- C++14: tools/bazel.rc
 
 ### Run Tests
 

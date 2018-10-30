@@ -2,9 +2,9 @@
 #include "bank_ocr/core/check_sum.h"
 
 void AccountNumber::parse(const LineSet& lines) {
-  merged.reset();
-  lines.merge(merged);
-  value = merged.value();
+  line.reset();
+  lines.merge(line);
+  value = line.value();
 }
 
 namespace {
@@ -55,7 +55,7 @@ namespace {
 
 std::string AccountNumber::guess() const {
   Guess guess;
-  merged.alternatives(guess);
+  line.alternatives(guess);
   return guess.get(value);
 }
 
@@ -79,6 +79,5 @@ std::istream& operator>>(std::istream& is, AccountNumber& num) {
 }
 
 std::ostream& operator<<(std::ostream& os, const AccountNumber& num) {
-  os << num.str();
-  return os;
+  return os << num.str();
 }
