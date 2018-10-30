@@ -31,7 +31,7 @@ void Line::merge(const Line& rhs) {
 }
 
 namespace {
-  const std::unordered_map<std::string, std::string> digits = {
+  const std::unordered_map<std::string, std::string> to_digits = {
     {
       " _ "
       "| |"
@@ -94,8 +94,8 @@ namespace {
   };
 
   std::string recognize(const std::string& digit) {
-    auto found = digits.find(digit);
-    return found != digits.end() ? found->second : "?";
+    auto found = to_digits.find(digit);
+    return found != to_digits.end() ? found->second : "?";
   }
 
   std::string recognize(const std::deque<std::string>& nums) {
@@ -113,8 +113,8 @@ std::string Line::value() const {
 
 namespace {
   template <typename F>
-  void scannables(F f) {
-    for (auto& i : digits) {
+  void digits(F f) {
+    for (auto& i : to_digits) {
       f(i.first);
     }
   }
@@ -128,8 +128,8 @@ namespace {
   }
 
   template <typename F>
-  void select(const std::string& num, F f) {
-    scannables([&num, &f](auto& digit) {
+  void guess(const std::string& num, F f) {
+    digits([&num, &f](auto& digit) {
       if (diff(digit, num) == 1) {
         f(digit);
       }
@@ -141,7 +141,7 @@ void Line::alternatives(Alternative& alt) const {
   for (std::deque<std::string> prefix, suffix(nums); !suffix.empty();) {
     auto num = suffix.front();
     suffix.pop_front();
-    select(num, [&alt, &prefix, &suffix](auto& guess) {
+    guess(num, [&alt, &prefix, &suffix](auto& guess) {
       alt.accept(recognize(prefix) + recognize(guess) + recognize(suffix));
     });
     prefix.push_back(num);

@@ -77,7 +77,8 @@ void LineSet::initialize(Lines& inlines) {
 }
 
 LineSet::LineSet(Lines& lines) : empty(isAllEmpty(lines)) {
-  if (empty) return;
+  if (empty)
+    return;
   normalize(lines);
   checkChars(lines);
   checkLengths(lines);
