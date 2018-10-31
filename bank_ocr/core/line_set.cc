@@ -1,11 +1,11 @@
 #include "bank_ocr/core/line_set.h"
-#include "bank_ocr/core/illformed_number_error.h"
+#include "bank_ocr/core/number_format_error.h"
 #include <set>
 #include <regex>
 
 namespace {
-  void assert_true(bool expr, const char* msg) {
-    if (!expr) throw IllformedNumberError(msg);
+  void assertTrue(bool expr, const char* msg) {
+    if (!expr) throw NumberFormatError(msg);
   }
 
   template <typename F>
@@ -18,7 +18,7 @@ namespace {
   template <typename Pred>
   void allof(LineSet::Lines& lines, const char* msg, Pred pred) {
     foreach(lines, [&pred, msg](auto& line) {
-      assert_true(pred(line), msg);
+      assertTrue(pred(line), msg);
     });
   }
 
@@ -41,7 +41,7 @@ namespace {
     foreach(lines, [&lens](auto& line) {
       lens.insert(line.size());
     });
-    assert_true(lens.size() == 1, "length should be same");
+    assertTrue(lens.size() == 1, "length should be same");
   }
 
   void normalize(LineSet::Lines& lines) {
@@ -59,29 +59,27 @@ namespace {
     });
   }
 
-  bool isAllEmpty(LineSet::Lines& lines) {
-    auto result = true;
-    foreach(lines, [&result](auto& line) {
-      if (!line.empty()) result = false;
+  bool allEmpty(const LineSet::Lines& lines) {
+    return std::all_of(lines.begin(), lines.end(), [](auto& line) {
+      return line.empty();
     });
-    return result;
   }
 }
 
-void LineSet::initialize(Lines& inlines) {
+void LineSet::save(const Lines& inlines) {
   for (auto& line : inlines) {
     lines.emplace_back(line);
   }
 }
 
-LineSet::LineSet(Lines& lines) : empty(isAllEmpty(lines)) {
-  if (empty)
-    return;
-  normalize(lines);
-  checkChars(lines);
-  checkLengths(lines);
-  checkSameSize(lines);
-  initialize(lines);
+LineSet::LineSet(Lines& lines) : empty(allEmpty(lines)) {
+  if (!empty) {
+    normalize(lines);
+    checkChars(lines);
+    checkLengths(lines);
+    checkSameSize(lines);
+    save(lines);
+  }
 }
 
 bool LineSet::isEmpty() const {

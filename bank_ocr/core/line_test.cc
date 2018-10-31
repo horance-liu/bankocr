@@ -1,60 +1,121 @@
 #include "bank_ocr/core/line.h"
 #include "cut/cut.hpp"
+#include <array>
 
 USING_CUT_NS
 USING_CUM_NS
 
 FIXTURE(LineTest) {
-  static Line line(const char* l1, const char* l2, const char* l3) {
-    Line line1(l1);
-    Line line2(l2);
-    Line line3(l3);
+  using SubLines = std::vector<const char*>;
 
-    Line line;
-    line.merge(line1);
-    line.merge(line2);
-    line.merge(line3);
-    return line;
+  static Line line(const SubLines& lines) {
+    Line merged;
+    for (auto& line : lines) {
+      merged.merge(Line(line));
+    }
+    return merged;
   }
 
-  static void expect(const char* l1, const char* l2, const char* l3, const char* value) {
-    ASSERT_THAT(line(l1, l2, l3).value(), eq(std::string(value)));
+  static void expect(const SubLines& lines, const std::string& value) {
+    ASSERT_THAT(line(lines).value(), eq(value));
   }
 
   TEST("single digit") {
-    expect(
-        " _ ",
-        "  |",
-        "  |",
-        "7"
-    );
+    expect({
+      "   ",
+      "  |",
+      "  |",
+    }, "1");
   }
 
-  TEST("illegible digit: | is not (!1l)") {
-    expect(
-        "  l",
-        "  1",
-        "  !",
-        "?"
-    );
+  TEST("| is not !") {
+    expect({
+      "   ",
+      "  !",
+      "  |",
+    }, "?");
   }
 
-  TEST("double digits") {
-    expect(
-        " _  _ ",
-        "  |  |",
-        "  |  |",
-        "77"
-    );
+  TEST("| is not 1") {
+    expect({
+      "   ",
+      "  1",
+      "  |",
+    }, "?");
   }
 
-  TEST("full digits") {
-    expect(
-        " _  _  _  _  _  _  _  _  _ ",
-        "  |  |  |  |  |  |  |  |  |",
-        "  |  |  |  |  |  |  |  |  |",
-        "777777777"
-    );
+  TEST("| is not l") {
+    expect({
+      "   ",
+      "  l",
+      "  |",
+    }, "?");
+  }
+
+  TEST("is not 1") {
+    expect({
+      "  |",
+      "  |",
+      "  |",
+    }, "?");
+
+    expect({
+      "   ",
+      "|  ",
+      "|  ",
+    }, "?");
+
+    expect({
+      "  |",
+      "  |",
+      "   ",
+    }, "?");
+
+    expect({
+      "   ",
+      " | ",
+      " | ",
+    }, "?");
+  }
+
+  TEST("is not 2: - is not _") {
+    expect({
+      " - ",
+      " _|",
+      "|_ ",
+    }, "?");
+  }
+
+  TEST("all blank") {
+    expect({
+      "   ",
+      "   ",
+      "   ",
+    }, "?");
+  }
+
+  TEST("1024: programmer's lucky number") {
+    expect({
+      "    _  _    ",
+      "  || | _||_|",
+      "  ||_||_   |",
+    }, "1024");
+  }
+
+  TEST("contains illegible digit: x") {
+    expect({
+      "    _  _ ",
+      "  | _| _|",
+      "  ||_ x_|",
+    }, "12?");
+  }
+
+  TEST("all digits") {
+    expect({
+      " _     _  _     _  _  _  _  _ ",
+      "| |  | _| _||_||_ |_   ||_||_|",
+      "|_|  ||_  _|  | _||_|  ||_| _|",
+    }, "0123456789");
   }
 
   struct Collector : Alternative {
@@ -64,7 +125,7 @@ FIXTURE(LineTest) {
 
   private:
     void accept(const std::string& alt) override {
-        alts.emplace_back(alt);
+      alts.emplace_back(alt);
     }
 
   private:
@@ -73,12 +134,11 @@ FIXTURE(LineTest) {
 
   TEST("alternatives") {
     Collector collector;
-
-    line(
+    line({
         "                           ",
         "  |  |  |  |  |  |  |  |  |",
-        "  |  |  |  |  |  |  |  |  |"
-    ).alternatives(collector);
+        "  |  |  |  |  |  |  |  |  |",
+    }).alternatives(collector);
 
     collector.matches({
       "711111111",

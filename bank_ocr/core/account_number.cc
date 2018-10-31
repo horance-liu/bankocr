@@ -2,6 +2,13 @@
 #include "bank_ocr/core/check_sum.h"
 #include "bank_ocr/core/line_set.h"
 
+AccountNumber::AccountNumber() {
+}
+
+AccountNumber::AccountNumber(const LineSet& lines) {
+  parse(lines);
+}
+
 void AccountNumber::parse(const LineSet& lines) {
   line.reset();
   lines.merge(line);
@@ -13,7 +20,7 @@ namespace {
     return s.find_first_of("?") != std::string::npos;
   }
 
-  bool isValid(const std::string& s) {
+  bool valid(const std::string& s) {
     return !illegible(s) && check(s);
   }
 
@@ -32,7 +39,7 @@ namespace {
 
   private:
     void accept(const std::string& alt) override {
-      if (isValid(alt)) {
+      if (valid(alt)) {
         alts.emplace_back(alt);
       }
     }
@@ -61,11 +68,7 @@ std::string AccountNumber::guess() const {
 }
 
 std::string AccountNumber::str() const {
-  return valid() ? value : guess();
-}
-
-bool AccountNumber::valid() const {
-  return isValid(value);
+  return valid(value) ? value : guess();
 }
 
 std::istream& operator>>(std::istream& is, AccountNumber& num) {

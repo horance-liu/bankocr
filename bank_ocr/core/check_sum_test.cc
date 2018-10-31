@@ -14,7 +14,7 @@ FIXTURE(CheckSumTest) {
     ASSERT_FALSE(check("111111111"));
   }
 
-  TEST("err: invalid size") {
+  TEST("err: invalid size(!=9)") {
     ASSERT_FALSE(check("00000000"));
     ASSERT_FALSE(check("0000000000"));
   }

@@ -1,5 +1,5 @@
 #include "bank_ocr/core/line_set.h"
-#include "bank_ocr/core/illformed_number_error.h"
+#include "bank_ocr/core/number_format_error.h"
 #include "cut/cut.hpp"
 
 USING_CUT_NS
@@ -7,16 +7,16 @@ USING_CUM_NS
 
 FIXTURE(LineSetTest) {
   static void throws(LineSet::Lines lines) {
-    ASSERT_TRUE(throwing<IllformedNumberError>([&lines]{
+    ASSERT_TRUE(throwing<NumberFormatError>([&lines]{
       LineSet set(lines);
     }));
   }
 
-  TEST("| is not [1l!]") {
+  TEST("| is not l") {
     throws({
-        "  1",
-        "  l",
-        "  !"
+      "   ",
+      "  l",
+      "  |"
     });
   }
 

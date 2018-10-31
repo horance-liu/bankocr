@@ -7,10 +7,11 @@
 struct LineSet;
 
 struct AccountNumber {
-  void parse(const LineSet&);
+  AccountNumber();
+  AccountNumber(const LineSet&);
 
+  void parse(const LineSet&);
   std::string str() const;
-  bool valid() const;
 
 private:
   void initialize(LineSet&);

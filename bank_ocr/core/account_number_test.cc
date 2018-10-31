@@ -1,5 +1,5 @@
 #include "bank_ocr/core/account_number.h"
-#include "bank_ocr/core/illformed_number_error.h"
+#include "bank_ocr/core/number_format_error.h"
 #include "bank_ocr/core/line_set.h"
 #include "cut/cut.hpp"
 
@@ -8,15 +8,12 @@ USING_CUM_NS
 
 FIXTURE(AccountNumberTest) {
   static void expect(LineSet::Lines lines, const std::string& expected) {
-    AccountNumber number;
-    number.parse(lines);
-    ASSERT_THAT(number.str(), eq(expected));
+    ASSERT_THAT(AccountNumber(lines).str(), eq(expected));
   }
 
   static void throws(LineSet::Lines lines) {
-    ASSERT_TRUE(throwing<IllformedNumberError>([&lines]{
-      AccountNumber number;
-      number.parse(lines);
+    ASSERT_TRUE(throwing<NumberFormatError>([&lines]{
+      AccountNumber number(lines);
     }));
   }
 
@@ -63,7 +60,7 @@ FIXTURE(AccountNumberTest) {
     }, "490867715");
   }
 
-  TEST("ILL: contains one illegible digits: 49006771?") {
+  TEST("ILL: contains one illegible digits, but no alternative: 49006771?") {
     expect({
       "    _  _  _  _  _  _     _ ",
       "|_||_|| || ||_   |  |  | _ ",
@@ -73,14 +70,13 @@ FIXTURE(AccountNumberTest) {
 
   TEST("ILL: contains two illegible digits: ?9086771?") {
     expect({
-    "    _  _  _  _  _  _     _ ",
-    "|_||_|| ||_||_   |  |  | _ ",
-    "    _||_||_||_|  |  |  | _|",
-
+      "    _  _  _  _  _  _     _ ",
+      "|_||_|| ||_||_   |  |  | _ ",
+      "    _||_||_||_|  |  |  | _|",
     }, "?9086771? ILL");
   }
 
-  TEST("ERR: 444444444") {
+  TEST("ERR(no valid alternatives): 444444444") {
     expect({
       "                           ",
       "|_||_||_||_||_||_||_||_||_|",
@@ -112,5 +108,13 @@ FIXTURE(AccountNumberTest) {
       "|_||_||_||_||_||_||_||_||_| ",
       "|_||_||_||_||_||_||_||_||_|  ",
     });
+  }
+
+  TEST("ERR: invalid length(==10)") {
+    expect({
+      " _  _  _  _  _  _  _  _  _  _ ",
+      "|_||_||_||_||_||_||_||_||_||_|",
+      "|_||_||_||_||_||_||_||_||_||_|",
+    }, "8888888888 ERR");
   }
 };

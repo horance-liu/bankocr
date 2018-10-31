@@ -1,6 +1,7 @@
 #include "bank_ocr/core/line.h"
 #include <regex>
 #include <unordered_map>
+#include <numeric>
 
 Line::Line() {}
 

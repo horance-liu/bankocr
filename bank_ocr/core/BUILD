@@ -44,11 +44,11 @@ cc_library(
     name = "line_set",
     hdrs = [
         "line_set.h",
-        "illformed_number_error.h",
+        "number_format_error.h",
     ],
     srcs = [
         "line_set.cc",
-        "illformed_number_error.cc",
+        "number_format_error.cc",
     ],
     deps = [":line"],
 )

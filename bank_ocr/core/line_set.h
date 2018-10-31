@@ -12,7 +12,7 @@ struct LineSet {
   void merge(Line&) const;
 
 private:
-  void initialize(Lines& lines);
+  void save(const Lines& lines);
 
 private:
   bool empty;
