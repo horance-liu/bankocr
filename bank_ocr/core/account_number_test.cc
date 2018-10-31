@@ -1,17 +1,16 @@
 #include "bank_ocr/core/account_number.h"
 #include "bank_ocr/core/number_format_error.h"
-#include "bank_ocr/core/line_set.h"
 #include "cut/cut.hpp"
 
 USING_CUT_NS
 USING_CUM_NS
 
 FIXTURE(AccountNumberTest) {
-  static void expect(LineSet::Lines lines, const std::string& expected) {
+  static void expect(std::vector<std::string> lines, const std::string& expected) {
     ASSERT_THAT(AccountNumber(lines).str(), eq(expected));
   }
 
-  static void throws(LineSet::Lines lines) {
+  static void throws(std::vector<std::string> lines) {
     ASSERT_TRUE(throwing<NumberFormatError>([&lines]{
       AccountNumber number(lines);
     }));
@@ -22,7 +21,6 @@ FIXTURE(AccountNumberTest) {
       " _                         ",
       "  |  |  |  |  |  |  |  |  |",
       "  |  |  |  |  |  |  |  |  |",
-
     }, "711111111");
   }
 
@@ -31,7 +29,6 @@ FIXTURE(AccountNumberTest) {
       "                           ",
       "  |  |  |  |  |  |  |  |  |",
       "  |  |  |  |  |  |  |  |  |",
-
     }, "711111111");
   }
 
@@ -40,7 +37,6 @@ FIXTURE(AccountNumberTest) {
       " _  _  _  _  _  _  _  _  _ ",
       "  |  |  |  |  |  |  |  |  |",
       "  |  |  |  |  |  |  |  |  |",
-
     }, "777777177");
   }
 

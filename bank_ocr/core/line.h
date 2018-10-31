@@ -10,7 +10,7 @@ struct Alternative {
 };
 
 struct Line {
-  Line();
+  Line() = default;
   Line(const std::string& line);
 
   void reset();
@@ -18,6 +18,9 @@ struct Line {
 
   std::string value() const;
   void alternatives(Alternative&) const;
+
+private:
+  void zip(const Line& rhs);
 
 private:
   std::deque<std::string> nums;

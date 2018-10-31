@@ -1,19 +1,8 @@
 #include "bank_ocr/core/account_number.h"
 #include "bank_ocr/core/check_sum.h"
-#include "bank_ocr/core/line_set.h"
-
-AccountNumber::AccountNumber() {
-}
-
-AccountNumber::AccountNumber(const LineSet& lines) {
-  parse(lines);
-}
-
-void AccountNumber::parse(const LineSet& lines) {
-  line.reset();
-  lines.merge(line);
-  value = line.value();
-}
+#include "bank_ocr/core/number_format_error.h"
+#include <regex>
+#include <set>
 
 namespace {
   bool illegible(const std::string& s) {
@@ -71,14 +60,118 @@ std::string AccountNumber::str() const {
   return valid(value) ? value : guess();
 }
 
+namespace {
+  const std::regex re_line("^[ |_]+$");
+
+  struct Validator {
+    Validator(std::vector<std::string>& inputs)
+      : inputs(inputs) {
+     if (inputs.size() == 3 && !allEmpty()) {
+       normalize();
+       checkChars();
+       checkLengths();
+       checkSameSize();
+       save();
+     }
+   }
+
+  void merge(Line& merged) const {
+    merged.reset();
+    for (auto& line : lines) {
+      merged.merge(line);
+    }
+  }
+
+  private:
+    static void assertTrue(bool expr, const char* msg) {
+      if (!expr) throw NumberFormatError(msg);
+    }
+
+    template <typename F>
+    void foreach(F f) const {
+      for (auto& in : inputs) {
+        f(in);
+      }
+    }
+
+    template <typename Pred>
+    void allof(const char* msg, Pred pred) const {
+      foreach([&pred, msg](auto& line) {
+        assertTrue(pred(line), msg);
+      });
+    }
+
+    void checkChars() const {
+      allof("should contain [ |_]", [](auto& line) {
+        return std::regex_match(line, re_line);
+      });
+    }
+
+    void checkLengths() const {
+      allof("length should be times of 3", [](auto& line) {
+        return line.size() > 1 && line.size() % 3 == 0;
+      });
+    }
+
+    void checkSameSize() const {
+      std::set<std::string::size_type> lens;
+      foreach([&lens](auto& line) {
+        lens.insert(line.size());
+      });
+      assertTrue(lens.size() == 1, "length should be same");
+    }
+
+    void normalize() const {
+      std::string::size_type max = 0;
+      foreach([&max](auto& line) {
+        if (max < line.size()) {
+          max = line.size();
+        }
+      });
+
+      foreach([&max](auto& line) {
+        if (line.size() < max) {
+          line += std::string(max - line.size(), ' ');
+        }
+      });
+    }
+
+    bool allEmpty() const {
+      return std::all_of(inputs.begin(), inputs.end(), [](auto& line) {
+        return line.empty();
+      });
+    }
+
+    void save() {
+      foreach([&](auto& line) {
+        lines.emplace_back(line);
+      });
+    }
+
+  private:
+    std::vector<std::string>& inputs;
+    std::vector<Line> lines;
+  };
+}
+
+AccountNumber::AccountNumber(std::vector<std::string>& lines) {
+  parse(lines);
+}
+
+void AccountNumber::parse(std::vector<std::string>& lines) {
+  Validator validator(lines);
+  validator.merge(line);
+  value = line.value();
+}
+
 std::istream& operator>>(std::istream& is, AccountNumber& num) {
-  std::string lines[4];
+  std::vector<std::string> lines(4);
   for (auto& line : lines) {
     std::getline(is, line);
   }
 
-  LineSet::Lines set(lines, lines + 3); // last line is blank.
-  num.parse({set});
+  lines.pop_back();   // last line is blank.
+  num.parse(lines);
   return is;
 }
 

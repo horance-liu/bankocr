@@ -1,14 +1,11 @@
 #include "bank_ocr/core/line.h"
 #include <regex>
 #include <unordered_map>
-#include <numeric>
-
-Line::Line() {}
 
 const std::regex re_num("...");
 
 Line::Line(const std::string& line) {
-  std::sregex_iterator beg(line.cbegin(), line.cend(), re_num), end;
+  std::sregex_iterator beg(line.begin(), line.end(), re_num), end;
   std::for_each(beg, end, [this](auto& m) {
     nums.emplace_back(m.str());
   });
@@ -18,16 +15,19 @@ void Line::reset() {
   nums.clear();
 }
 
-void Line::merge(const Line& rhs) {
-  if (nums.empty()) {
-    nums = rhs.nums;
-    return;
-  }
-
+void Line::zip(const Line& rhs) {
   auto i2 = rhs.nums.begin();
   for (auto i1 = nums.begin(); i1 != nums.end(); i1++) {
     *i1 += *i2;
     i2++;
+  }
+}
+
+void Line::merge(const Line& rhs) {
+  if (nums.empty()) {
+    nums = rhs.nums;
+  } else {
+    zip(rhs);
   }
 }
 
@@ -94,22 +94,22 @@ namespace {
     },
   };
 
-  std::string recognize(const std::string& digit) {
+  std::string to(const std::string& digit) {
     auto found = to_digits.find(digit);
     return found != to_digits.end() ? found->second : "?";
   }
 
-  std::string recognize(const std::deque<std::string>& nums) {
+  std::string to(const std::deque<std::string>& nums) {
     std::string result;
     for (auto& num : nums) {
-      result += recognize(num);
+      result += to(num);
     }
     return result;
   }
 }
 
 std::string Line::value() const {
-  return recognize(nums);
+  return to(nums);
 }
 
 namespace {
@@ -128,22 +128,23 @@ namespace {
     return num;
   }
 
-  template <typename F>
+  template <typename F, int confidence = 1>
   void guess(const std::string& num, F f) {
     digits([&num, &f](auto& digit) {
-      if (diff(digit, num) == 1) {
+      if (diff(digit, num) == confidence) {
         f(digit);
       }
     });
   }
 }
 
+// NOTE: performance is not good, should not copy it.
 void Line::alternatives(Alternative& alt) const {
   for (std::deque<std::string> prefix, suffix(nums); !suffix.empty();) {
     auto num = suffix.front();
     suffix.pop_front();
-    guess(num, [&alt, &prefix, &suffix](auto& guess) {
-      alt.accept(recognize(prefix) + recognize(guess) + recognize(suffix));
+    guess(num, [&alt, &prefix, &suffix](auto& digit) {
+      alt.accept(to(prefix) + to(digit) + to(suffix));
     });
     prefix.push_back(num);
   }

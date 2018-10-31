@@ -3,18 +3,18 @@
 
 #include "bank_ocr/core/line.h"
 #include <iostream>
+#include <vector>
 
 struct LineSet;
 
 struct AccountNumber {
-  AccountNumber();
-  AccountNumber(const LineSet&);
+  AccountNumber() = default;
+  AccountNumber(std::vector<std::string>&);
 
-  void parse(const LineSet&);
+  void parse(std::vector<std::string>& lines);
   std::string str() const;
 
 private:
-  void initialize(LineSet&);
   std::string guess() const;
 
 private:

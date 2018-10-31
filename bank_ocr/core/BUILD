@@ -41,34 +41,17 @@ cc_test(
 )
 
 cc_library(
-    name = "line_set",
+    name = "account_number",
     hdrs = [
-        "line_set.h",
+        "account_number.h",
         "number_format_error.h",
-    ],
+        ],
     srcs = [
-        "line_set.cc",
+        "account_number.cc",
         "number_format_error.cc",
     ],
-    deps = [":line"],
-)
-
-cc_test(
-    name = "line_set_test",
-    srcs = ["line_set_test.cc"],
     deps = [
-        ":line_set",
-        "@xunit_cut//:cut",       
-        "@xunit_cut//:cut_main",        
-    ],
-)
-
-cc_library(
-    name = "account_number",
-    hdrs = ["account_number.h"],
-    srcs = ["account_number.cc"],
-    deps = [
-      ":line_set",
+      ":line",
       ":check_sum",
     ],
 )
