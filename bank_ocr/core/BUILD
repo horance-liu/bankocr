@@ -42,14 +42,8 @@ cc_test(
 
 cc_library(
     name = "account_number",
-    hdrs = [
-        "account_number.h",
-        "number_format_error.h",
-        ],
-    srcs = [
-        "account_number.cc",
-        "number_format_error.cc",
-    ],
+    hdrs = ["account_number.h"],
+    srcs = ["account_number.cc"],
     deps = [
       ":line",
       ":check_sum",

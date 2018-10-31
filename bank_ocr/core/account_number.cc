@@ -1,8 +1,8 @@
 #include "bank_ocr/core/account_number.h"
 #include "bank_ocr/core/check_sum.h"
-#include "bank_ocr/core/number_format_error.h"
 #include <regex>
 #include <set>
+#include <stdexcept>
 
 namespace {
   bool illegible(const std::string& s) {
@@ -84,7 +84,7 @@ namespace {
 
   private:
     static void assertTrue(bool expr, const char* msg) {
-      if (!expr) throw NumberFormatError(msg);
+      if (!expr) throw std::invalid_argument(msg);
     }
 
     template <typename F>

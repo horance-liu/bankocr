@@ -1,6 +1,6 @@
 #include "bank_ocr/core/account_number.h"
-#include "bank_ocr/core/number_format_error.h"
 #include "cut/cut.hpp"
+#include <stdexcept>
 
 USING_CUT_NS
 USING_CUM_NS
@@ -11,7 +11,7 @@ FIXTURE(AccountNumberTest) {
   }
 
   static void throws(std::vector<std::string> lines) {
-    ASSERT_TRUE(throwing<NumberFormatError>([&lines]{
+    ASSERT_TRUE(throwing<std::invalid_argument>([&lines]{
       AccountNumber number(lines);
     }));
   }
