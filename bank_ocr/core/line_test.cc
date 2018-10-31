@@ -6,9 +6,9 @@ USING_CUT_NS
 USING_CUM_NS
 
 FIXTURE(LineTest) {
-  using SubLines = std::vector<const char*>;
+  using Lines = std::vector<const char*>;
 
-  static Line line(const SubLines& lines) {
+  static Line line(const Lines& lines) {
     Line merged;
     for (auto& line : lines) {
       merged.merge(Line(line));
@@ -16,7 +16,7 @@ FIXTURE(LineTest) {
     return merged;
   }
 
-  static void expect(const SubLines& lines, const std::string& value) {
+  static void expect(const Lines& lines, const std::string& value) {
     ASSERT_THAT(line(lines).value(), eq(value));
   }
 
@@ -135,9 +135,9 @@ FIXTURE(LineTest) {
   TEST("alternatives") {
     Collector collector;
     line({
-        "                           ",
-        "  |  |  |  |  |  |  |  |  |",
-        "  |  |  |  |  |  |  |  |  |",
+      "                           ",
+      "  |  |  |  |  |  |  |  |  |",
+      "  |  |  |  |  |  |  |  |  |",
     }).alternatives(collector);
 
     collector.matches({

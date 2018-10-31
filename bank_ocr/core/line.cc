@@ -131,7 +131,8 @@ namespace {
   template <typename F, int confidence = 1>
   void guess(const std::string& num, F f) {
     digits([&num, &f](auto& digit) {
-      if (diff(digit, num) == confidence) {
+      auto degree = diff(digit, num);
+      if (degree > 0 && degree <= confidence) {
         f(digit);
       }
     });
