@@ -2,7 +2,7 @@
 
 namespace str_utils {
 
-std::string rtrim(const std::string& s, std::string::size_type from) {
+std::string rtrim(const std::string& s, string_size_t from) {
   auto last = s.size() - 1;
   while (last != from && ::isspace(s[last])) {
     --last;
@@ -12,7 +12,7 @@ std::string rtrim(const std::string& s, std::string::size_type from) {
 
 int diff(const std::string& lhs, const std::string& rhs) {
   auto num = 0;
-  for (std::string::size_type i = 0; i != lhs.size(); ++i) {
+  for (string_size_t i = 0; i != lhs.size(); ++i) {
     if (lhs[i] != rhs[i]) num++;
   }
   return num;

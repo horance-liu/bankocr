@@ -5,8 +5,17 @@
 
 namespace str_utils {
 
-std::string rtrim(const std::string&, std::string::size_type = 0);
+using string_size_t = std::string::size_type;
+
+std::string rtrim(const std::string&, string_size_t = 0);
 int diff(const std::string&, const std::string&);
+
+template <typename F>
+void foreach(const std::string& s, F f, int step = 1) {
+  for (string_size_t i = 0; i != s.size(); i += step) {
+    f(s[i], i);
+  }
+}
 
 template <typename Iterator>
 std::string join(Iterator begin, Iterator end, const char* sep) {

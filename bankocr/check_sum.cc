@@ -1,12 +1,13 @@
 #include "bankocr/check_sum.h"
+#include "bankocr/str_utils.h"
 
 namespace {
 
 int sum(const std::string& value) {
   auto result = 0;
-  for (std::string::size_type i = 0; i != value.size(); ++i) {
-    result += (value[i] - '0') * (value.size() - i);
-  }
+  str_utils::foreach(value, [&value, &result](auto ch, auto i) {
+    result += (ch - '0') * (value.size() - i);
+  }); 
   return result;
 }
 

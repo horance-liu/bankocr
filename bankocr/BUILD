@@ -3,12 +3,6 @@ licenses(["notice"])  # Apache 2.0
 exports_files(["LICENSE"])
 
 cc_library(
-    name = "check_sum",
-    hdrs = ["check_sum.h"],
-    srcs = ["check_sum.cc"],
-)
-
-cc_library(
     name = "str_utils",
     hdrs = ["str_utils.h"],
     srcs = ["str_utils.cc"],
@@ -22,6 +16,13 @@ cc_test(
         "@xunit_cut//:cut",       
         "@xunit_cut//:cut_main",        
     ],
+)
+
+cc_library(
+    name = "check_sum",
+    hdrs = ["check_sum.h"],
+    srcs = ["check_sum.cc"],
+    deps = [":str_utils"],
 )
 
 cc_test(
