@@ -10,8 +10,7 @@ struct Alternative {
 };
 
 struct Line {
-  Line() = default;
-  Line(const std::string& line);
+  Line(const std::string& line = "");
 
   void reset();
   void merge(const Line& rhs);

@@ -1,18 +1,18 @@
-#include "bank_ocr/core/account_number.h"
+#include "bank_ocr/core/account.h"
 #include "cut/cut.hpp"
 #include <stdexcept>
 
 USING_CUT_NS
 USING_CUM_NS
 
-FIXTURE(AccountNumberTest) {
-  static void expect(std::vector<std::string> lines, const std::string& expected) {
-    ASSERT_THAT(AccountNumber(lines).str(), eq(expected));
+FIXTURE(AccountTest) {
+  static void expect(Account::Lines lines, const std::string& expected) {
+    ASSERT_THAT(Account(lines).str(), eq(expected));
   }
 
-  static void throws(std::vector<std::string> lines) {
+  static void throws(Account::Lines lines) {
     ASSERT_TRUE(throwing<std::invalid_argument>([&lines]{
-      AccountNumber number(lines);
+      Account number(lines);
     }));
   }
 
@@ -89,28 +89,58 @@ FIXTURE(AccountNumberTest) {
     }, "888888888 AMB [888886888, 888888988, 888888880]");
   }
 
+  TEST("will append missing space at end lines") {
+    expect({
+      "",  // missing spaces.
+      "  |  |  |  |  |  |  |  |  |",
+      "  |  |  |  |  |  |  |  |  |",
+    }, "711111111");
+  }
 
-  TEST("contains illegal char: *") {
+  TEST("should be 3 lines") {
+    throws({
+      "  |  |  |  |  |  |  |  |  |  ",
+      "  |  |  |  |  |  |  |  |  |  ",
+    });
+  }
+
+  TEST("it contains only 8 digits, and will append missing spaces at end lines") {
+    expect({
+      "    _  _     _  _  _  _ ",
+      "  | _| _||_||_ |_   ||_|",
+      "  ||_  _|  | _||_|  ||_|",
+    }, "12345678? ILL");
+  }
+
+  TEST("will rtrim all blanks at end of lines") {
+    expect({
+      " _                            ",
+      "  |  |  |  |  |  |  |  |  |   ",
+      "  |  |  |  |  |  |  |  |  |   ",
+    }, "711111111");
+  }
+
+  TEST("will not rtrim non-blanks at end of lines") {
+    throws({
+      " _     _  _     _  _  _  _  _ ",
+      "| |  | _| _||_||_ |_   ||_||_|",
+      "|_|  ||_  _|  | _||_|  ||_| _|",
+    });
+  }
+
+  TEST("will not ltrim blanks at begin of lines") {
+    throws({
+      "   _                         ",
+      "    |  |  |  |  |  |  |  |  |",
+      "    |  |  |  |  |  |  |  |  |",
+    });
+  }
+
+  TEST("line should be only [ |_], but it contains x") {
     throws({
       " _  _  _  _  _  _  _  _  _ ",
       "|_||_||_||_||_||_||_||_||_|",
-      "|_||_||_||_|*_||_||_||_||_|",
+      "|_||_||_||_|x_||_||_||_||_|",
     });
-  }
-
-  TEST("length is not the same") {
-    throws({
-      " _  _  _  _  _  _  _  _  _ ",
-      "|_||_||_||_||_||_||_||_||_| ",
-      "|_||_||_||_||_||_||_||_||_|  ",
-    });
-  }
-
-  TEST("ERR: invalid length(==10)") {
-    expect({
-      " _  _  _  _  _  _  _  _  _  _ ",
-      "|_||_||_||_||_||_||_||_||_||_|",
-      "|_||_||_||_||_||_||_||_||_||_|",
-    }, "8888888888 ERR");
   }
 };

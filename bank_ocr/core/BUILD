@@ -41,9 +41,9 @@ cc_test(
 )
 
 cc_library(
-    name = "account_number",
-    hdrs = ["account_number.h"],
-    srcs = ["account_number.cc"],
+    name = "account",
+    hdrs = ["account.h"],
+    srcs = ["account.cc"],
     deps = [
       ":line",
       ":check_sum",
@@ -51,10 +51,10 @@ cc_library(
 )
 
 cc_test(
-    name = "account_number_test",
-    srcs = ["account_number_test.cc"],
+    name = "account_test",
+    srcs = ["account_test.cc"],
     deps = [
-        ":account_number",
+        ":account",
         "@xunit_cut//:cut",       
         "@xunit_cut//:cut_main",        
     ],
@@ -63,5 +63,5 @@ cc_test(
 cc_binary(
     name = "main",
     srcs = ["main.cc"],
-    deps = [ ":account_number"],
+    deps = [ ":account"],
 )

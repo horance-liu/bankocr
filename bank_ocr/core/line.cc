@@ -2,10 +2,9 @@
 #include <regex>
 #include <unordered_map>
 
-const std::regex re_num("...");
-
 Line::Line(const std::string& line) {
-  std::sregex_iterator beg(line.begin(), line.end(), re_num), end;
+  static const std::regex re("...");
+  std::sregex_iterator beg(line.begin(), line.end(), re), end;
   std::for_each(beg, end, [this](auto& m) {
     nums.emplace_back(m.str());
   });
@@ -15,11 +14,10 @@ void Line::reset() {
   nums.clear();
 }
 
-void Line::zip(const Line& rhs) {
-  auto i2 = rhs.nums.begin();
-  for (auto i1 = nums.begin(); i1 != nums.end(); i1++) {
-    *i1 += *i2;
-    i2++;
+inline void Line::zip(const Line& rhs) {
+  auto dst = rhs.nums.begin();
+  for (auto& src : nums) {
+    src += *dst++;
   }
 }
 
@@ -94,25 +92,6 @@ namespace {
     },
   };
 
-  std::string to(const std::string& digit) {
-    auto found = to_digits.find(digit);
-    return found != to_digits.end() ? found->second : "?";
-  }
-
-  std::string to(const std::deque<std::string>& nums) {
-    std::string result;
-    for (auto& num : nums) {
-      result += to(num);
-    }
-    return result;
-  }
-}
-
-std::string Line::value() const {
-  return to(nums);
-}
-
-namespace {
   template <typename F>
   void digits(F f) {
     for (auto& i : to_digits) {
@@ -137,11 +116,25 @@ namespace {
       }
     });
   }
+
+  std::string to(const std::string& digit) {
+    auto found = to_digits.find(digit);
+    return found != to_digits.end() ? found->second : "?";
+  }
+
+  using Nums = std::deque<std::string>;
+
+  std::string to(const Nums& nums) {
+    std::string result;
+    for (auto& num : nums) {
+      result += to(num);
+    }
+    return result;
+  }
 }
 
-// NOTE: performance is not good, should not copy it.
 void Line::alternatives(Alternative& alt) const {
-  for (std::deque<std::string> prefix, suffix(nums); !suffix.empty();) {
+  for (Nums prefix, suffix(nums); !suffix.empty();) {
     auto num = suffix.front();
     suffix.pop_front();
     guess(num, [&alt, &prefix, &suffix](auto& digit) {
@@ -149,4 +142,8 @@ void Line::alternatives(Alternative& alt) const {
     });
     prefix.push_back(num);
   }
+}
+
+std::string Line::value() const {
+  return to(nums);
 }
