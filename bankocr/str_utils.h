@@ -4,19 +4,21 @@
 #include <string>
 
 namespace str_utils {
-  template <typename Iterator>
-  std::string join(Iterator begin, Iterator end, const char* sep) {
-    std::string result;
-    for (auto first = true; begin != end; ++begin) {
-      result += (first ? "" : sep);
-      result += *begin;
-      first = false;
-    }
-    return result;
-  }
 
-  std::string rtrim(const std::string& s, std::string::size_type from = 0);
-  int diff(const std::string& lhs, const std::string& rhs);
+std::string rtrim(const std::string&, std::string::size_type = 0);
+int diff(const std::string&, const std::string&);
+
+template <typename Iterator>
+std::string join(Iterator begin, Iterator end, const char* sep) {
+  std::string result;
+  for (auto first = true; begin != end; ++begin) {
+    result += (first ? "" : sep);
+    result += *begin;
+    first = false;
+  }
+  return result;
+}
+
 }
 
 #endif

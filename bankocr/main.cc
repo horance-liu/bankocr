@@ -6,22 +6,24 @@
 #include <memory>
 
 namespace {
-  auto close = [](std::ifstream* s) {
-    s->close();
+
+auto close = [](std::ifstream* s) {
+  s->close();
+};
+
+using FileStream = std::unique_ptr<std::ifstream, decltype(close)>;
+
+void exec(const char* file) {
+  FileStream in(new std::ifstream(file), close);
+  std::vector<Account> accounts {
+      std::istream_iterator<Account>(*in),
+      std::istream_iterator<Account>()
   };
+  std::copy(accounts.cbegin(), accounts.cend(),
+      std::ostream_iterator<Account>(std::cout, "\n")
+  );
+}
 
-  using FileStream = std::unique_ptr<std::ifstream, decltype(close)>;
-
-  void exec(const char* file) {
-    FileStream in(new std::ifstream(file), close);
-    std::vector<Account> accounts {
-        std::istream_iterator<Account>(*in),
-        std::istream_iterator<Account>()
-    };
-    std::copy(accounts.cbegin(), accounts.cend(),
-        std::ostream_iterator<Account>(std::cout, "\n")
-    );
-  }
 }
 
 int main(int argc, char** argv) {
