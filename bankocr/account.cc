@@ -1,5 +1,6 @@
 #include "bankocr/account.h"
 #include "bankocr/check_sum.h"
+#include "bankocr/str_utils.h"
 
 #include <regex>
 #include <stdexcept>
@@ -18,7 +19,7 @@ namespace {
       if (alts.size() == 1) {
         return alts.front();
       } else if(alts.size() > 1) {
-        return value + " AMB " + list();
+        return value + " AMB [" + list() + "]";
       } else if(illegible(value)) {
         return value + " ILL";
       } else {
@@ -27,6 +28,10 @@ namespace {
     }
 
   private:
+    std::string list() const {
+      return str_utils::join(alts.cbegin(), alts.cend(), ", ");
+    }
+
     void accept(const std::string& alt) override {
       if (valid(alt)) {
         alts.emplace_back(alt);
@@ -34,30 +39,18 @@ namespace {
     }
 
   private:
-    std::string list() const {
-      std::string result("[");
-      bool first = true;
-      for (auto& alt : alts) {
-        result += (first ? "" : ", ");
-        result += alt;
-        first = false;
-      }
-      return result += "]";
-    }
-
-  private:
     std::vector<std::string> alts;
   };
+}
 
-  std::string guess(const Line& line, const std::string& value) {
-    Guess guess;
-    line.alternatives(guess);
-    return guess.get(value);
-  }
+std::string Account::guess() const {
+  Guess guess;
+  line.alternatives(guess);
+  return guess.get(value);
 }
 
 std::string Account::str() const {
-  return valid(value) ? value : guess(line, value);
+  return valid(value) ? value : guess();
 }
 
 namespace {
@@ -67,33 +60,21 @@ namespace {
       checkLengths();
       checkChars();
       save();
-   }
-
-  void merge(Line& merged) const {
-    merged.reset();
-    for (auto& line : lines) {
-      merged.merge(line);
     }
-  }
+
+    void merge(Line& merged) const {
+      merged.reset();
+      for (auto& line : lines) {
+        merged.merge(line);
+      }
+    }
 
   private:
-    static std::string rtrim(const std::string& s) {
-      auto last = s.size() - 1;
-      while (last != MAX_LENGTH - 1 && ::isspace(s[last])) {
-        --last;
-      }
-      return s.substr(0, last + 1);
-    }
-
-    static std::string suffix(const std::string& s) {
-      return std::string(MAX_LENGTH - s.size(), ' ');
-    }
-
     static void normalize(std::string& line) {
       if (line.size() < MAX_LENGTH) {
-        line += suffix(line);
+        line += std::string(MAX_LENGTH - line.size(), ' ');
       } else if (line.size() > MAX_LENGTH) {
-        line = rtrim(line);
+        line = str_utils::rtrim(line, MAX_LENGTH - 1);
       }
     }
 
@@ -109,7 +90,7 @@ namespace {
 
     template <typename Pred>
     bool allof(Pred pred) const {
-      return std::all_of(inputs.begin(), inputs.end(), [&pred](auto& line) {
+      return std::all_of(inputs.cbegin(), inputs.cend(), [&pred](auto& line) {
         return pred(line);
       });
     }

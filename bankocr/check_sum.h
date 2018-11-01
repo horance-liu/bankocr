@@ -3,6 +3,6 @@
 
 #include <string>
 
-bool check(const std::string& value);
+bool check(const std::string&);
 
 #endif

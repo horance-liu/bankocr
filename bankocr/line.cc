@@ -1,6 +1,8 @@
+#include "bankocr/line.h"
+#include "bankocr/str_utils.h"
+
 #include <regex>
 #include <unordered_map>
-#include "bankocr/line.h"
 
 Line::Line(const std::string& line) {
   static const std::regex re("...");
@@ -92,31 +94,6 @@ namespace {
     },
   };
 
-  template <typename F>
-  void digits(F f) {
-    for (auto& i : to_digits) {
-      f(i.first);
-    }
-  }
-
-  int diff(const std::string& lhs, const std::string& rhs) {
-    auto num = 0;
-    for (std::string::size_type i = 0; i != lhs.size(); ++i) {
-      if (lhs[i] != rhs[i]) num++;
-    }
-    return num;
-  }
-
-  template <typename F, int confidence = 1>
-  void guess(const std::string& num, F f) {
-    digits([&num, &f](auto& digit) {
-      auto degree = diff(digit, num);
-      if (degree > 0 && degree <= confidence) {
-        f(digit);
-      }
-    });
-  }
-
   std::string to(const std::string& digit) {
     auto found = to_digits.find(digit);
     return found != to_digits.end() ? found->second : "?";
@@ -131,11 +108,28 @@ namespace {
     }
     return result;
   }
+
+  template <typename F>
+  void digits(F f) {
+    for (auto& i : to_digits) {
+      f(i.first);
+    }
+  }
+
+  template <typename F, int confidence = 1>
+  void guess(const std::string& num, F f) {
+    digits([&num, &f](auto& digit) {
+      auto degree = str_utils::diff(digit, num);
+      if (degree > 0 && degree <= confidence) {
+        f(digit);
+      }
+    });
+  }
 }
 
 void Line::alternatives(Alternative& alt) const {
   for (Nums prefix, suffix(nums); !suffix.empty();) {
-    auto num = suffix.front();
+    auto& num = suffix.front();
     suffix.pop_front();
     guess(num, [&alt, &prefix, &suffix](auto& digit) {
       alt.accept(to(prefix) + to(digit) + to(suffix));

@@ -11,8 +11,11 @@ struct Account {
   Account() = default;
   Account(Lines&);
 
-  void parse(Lines& lines);
+  void parse(Lines&);
   std::string str() const;
+
+private:
+  std::string guess() const;
 
 private:
   Line line;

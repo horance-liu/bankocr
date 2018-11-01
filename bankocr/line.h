@@ -10,16 +10,16 @@ struct Alternative {
 };
 
 struct Line {
-  Line(const std::string& line = "");
+  Line(const std::string& = "");
 
   void reset();
-  void merge(const Line& rhs);
+  void merge(const Line&);
 
   std::string value() const;
   void alternatives(Alternative&) const;
 
 private:
-  void zip(const Line& rhs);
+  void zip(const Line&);
 
 private:
   std::deque<std::string> nums;

@@ -8,6 +8,22 @@ cc_library(
     srcs = ["check_sum.cc"],
 )
 
+cc_library(
+    name = "str_utils",
+    hdrs = ["str_utils.h"],
+    srcs = ["str_utils.cc"],
+)
+
+cc_test(
+    name = "str_utils_test",
+    srcs = ["str_utils_test.cc"],
+    deps = [
+        ":str_utils",
+        "@xunit_cut//:cut",       
+        "@xunit_cut//:cut_main",        
+    ],
+)
+
 cc_test(
     name = "check_sum_test",
     srcs = ["check_sum_test.cc"],
@@ -22,6 +38,7 @@ cc_library(
     name = "line",
     hdrs = ["line.h"],
     srcs = ["line.cc"],
+    deps = [":str_utils"],
 )
 
 cc_test(
@@ -41,6 +58,7 @@ cc_library(
     deps = [
       ":line",
       ":check_sum",
+      ":str_utils",
     ],
 )
 
