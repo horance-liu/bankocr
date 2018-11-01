@@ -1,4 +1,4 @@
-workspace(name = "bank_ocr")
+workspace(name = "bankocr")
 
 # using cut for xunit test framework.
 # github: https://github.com/horance-liu/cut

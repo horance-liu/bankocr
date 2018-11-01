@@ -1,6 +1,6 @@
-#include "bank_ocr/core/line.h"
 #include "cut/cut.hpp"
 #include <array>
+#include "bankocr/line.h"
 
 USING_CUT_NS
 USING_CUM_NS

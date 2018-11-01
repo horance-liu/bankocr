@@ -1,4 +1,4 @@
-#include "bank_ocr/core/account.h"
+#include "bankocr/account.h"
 #include "cut/cut.hpp"
 #include <stdexcept>
 

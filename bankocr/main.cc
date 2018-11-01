@@ -1,4 +1,4 @@
-#include "bank_ocr/core/account.h"
+#include "bankocr/account.h"
 #include <fstream>
 #include <iterator>
 #include <algorithm>

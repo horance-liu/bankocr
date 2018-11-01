@@ -1,4 +1,4 @@
-#include "bank_ocr/core/check_sum.h"
+#include "bankocr/check_sum.h"
 
 namespace {
   int sum(const std::string& value) {
@@ -9,11 +9,11 @@ namespace {
     return result;
   }
 
-  int check_sum(const std::string& value) {
+  int checksum(const std::string& value) {
     return sum(value) % 11;
   }
 }
 
 bool check(const std::string& value) {
-  return value.size() == 9 && check_sum(value) == 0;
+  return value.size() == 9 && checksum(value) == 0;
 }

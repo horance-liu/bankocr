@@ -1,6 +1,6 @@
-#include "bank_ocr/core/line.h"
 #include <regex>
 #include <unordered_map>
+#include "bankocr/line.h"
 
 Line::Line(const std::string& line) {
   static const std::regex re("...");

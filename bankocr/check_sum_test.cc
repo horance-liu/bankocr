@@ -1,4 +1,4 @@
-#include "bank_ocr/core/check_sum.h"
+#include "bankocr/check_sum.h"
 #include "cut/cut.hpp"
 
 USING_CUT_NS

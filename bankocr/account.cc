@@ -1,7 +1,7 @@
-#include "bank_ocr/core/account.h"
-#include "bank_ocr/core/check_sum.h"
 #include <regex>
 #include <stdexcept>
+#include "bankocr/account.h"
+#include "bankocr/check_sum.h"
 
 namespace {
   bool illegible(const std::string& s) {
