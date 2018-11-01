@@ -10,14 +10,14 @@
 #### Run Tests
 
 ```bash
-$ bazel test //bank_ocr/... 
+$ bazel test //bankocr/... 
 ```
 
 #### Run Main
 
 ```bash
-$ bazel build //bank_ocr:main
-$ bazel-bin/bank_ocr/core/main bank_ocr/core/usecase.in
+$ bazel build //bankocr
+$ bazel-bin/bankocr/bankocr bankocr/usecase.in
 ```
 
 ## Problem Description

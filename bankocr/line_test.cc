@@ -1,17 +1,16 @@
-#include "cut/cut.hpp"
-#include <array>
 #include "bankocr/line.h"
+#include "cut/cut.hpp"
 
 USING_CUT_NS
 USING_CUM_NS
 
 FIXTURE(LineTest) {
-  using Lines = std::vector<const char*>;
+  using Lines = std::vector<std::string>;
 
   static Line line(const Lines& lines) {
     Line merged;
     for (auto& line : lines) {
-      merged.merge(Line(line));
+      merged.merge(line);
     }
     return merged;
   }

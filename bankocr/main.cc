@@ -14,24 +14,24 @@ namespace {
 
   void exec(const char* file) {
     FileStream in(new std::ifstream(file), close);
-
-    std::vector<Account> accounts;
-    std::copy(std::istream_iterator<Account>(*in),
-              std::istream_iterator<Account>(),
-              std::back_inserter(accounts));
-
-    std::copy(accounts.begin(), accounts.end(),
-              std::ostream_iterator<Account>(std::cout, "\n"));
+    std::vector<Account> accounts {
+        std::istream_iterator<Account>(*in),
+        std::istream_iterator<Account>()
+    };
+    std::copy(accounts.cbegin(), accounts.cend(),
+        std::ostream_iterator<Account>(std::cout, "\n")
+    );
   }
 }
 
 int main(int argc, char** argv) {
   try {
     exec(argv[1]);
-  } catch(const std::invalid_argument& e) {
+  } catch (const std::invalid_argument& e) {
     std::cerr << "bad format: " << e.what() << std::endl;
     return EXIT_FAILURE;
-  } catch(...) {
+  } catch (...) {
+    std::cerr << "unknown exception" << std::endl;
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;

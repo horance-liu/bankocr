@@ -1,7 +1,8 @@
-#include <regex>
-#include <stdexcept>
 #include "bankocr/account.h"
 #include "bankocr/check_sum.h"
+
+#include <regex>
+#include <stdexcept>
 
 namespace {
   bool illegible(const std::string& s) {

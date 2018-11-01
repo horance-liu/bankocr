@@ -55,7 +55,7 @@ cc_test(
 )
 
 cc_binary(
-    name = "main",
+    name = "bankocr",
     srcs = ["main.cc"],
     deps = [ ":account"],
 )
