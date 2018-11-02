@@ -4,11 +4,11 @@
 namespace {
 
 int sum(const std::string& value) {
-  auto result = 0;
-  str_utils::foreach(value, [&value, &result](auto ch, auto i) {
-    result += (ch - '0') * (value.size() - i);
+  auto num = 0;
+  str_utils::foreach(value, [&value, &num](auto ch, auto i) {
+    num += (ch - '0') * (value.size() - i);
   }); 
-  return result;
+  return num;
 }
 
 int checksum(const std::string& value) {

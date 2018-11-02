@@ -2,19 +2,19 @@
 
 namespace str_utils {
 
-std::string rtrim(const std::string& s, string_size_t from) {
-  auto last = s.size() - 1;
-  while (last != from && ::isspace(s[last])) {
+std::string rtrim(const std::string& s, ssize_t from) {
+  auto last = s.size();
+  while (last != from && ::isspace(s[last - 1])) {
     --last;
   }
-  return s.substr(0, last + 1);
+  return s.substr(0, last);
 }
 
 int diff(const std::string& lhs, const std::string& rhs) {
   auto num = 0;
-  for (string_size_t i = 0; i != lhs.size(); ++i) {
+  foreach(lhs, [&num, &lhs, &rhs](auto, auto i) {
     if (lhs[i] != rhs[i]) num++;
-  }
+  });
   return num;
 }
 

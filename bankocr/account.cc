@@ -77,7 +77,7 @@ private:
     if (line.size() < MAX_LENGTH) {
       line += std::string(MAX_LENGTH - line.size(), ' ');
     } else if (line.size() > MAX_LENGTH) {
-      line = str_utils::rtrim(line, MAX_LENGTH - 1);
+      line = str_utils::rtrim(line, MAX_LENGTH);
     }
   }
 
@@ -93,9 +93,11 @@ private:
 
   template <typename Pred>
   bool allof(Pred pred) const {
-    return std::all_of(inputs.cbegin(), inputs.cend(), [&pred](auto& line) {
-      return pred(line);
-    });
+    return std::all_of(inputs.cbegin(), inputs.cend(), 
+       [&pred](auto& line) { 
+         return pred(line);
+       }
+    );
   }
 
   void checkChars() const {

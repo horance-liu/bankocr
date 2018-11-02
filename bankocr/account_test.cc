@@ -6,7 +6,8 @@ USING_CUT_NS
 USING_CUM_NS
 
 FIXTURE(AccountTest) {
-  static void expect(Account::Lines lines, const std::string& expected) {
+  static void expect(
+    Account::Lines lines, const std::string& expected) {
     ASSERT_THAT(Account(lines).str(), eq(expected));
   }
 
@@ -56,7 +57,7 @@ FIXTURE(AccountTest) {
     }, "490867715");
   }
 
-  TEST("ILL: contains one illegible digits, but no alternative: 49006771?") {
+  TEST("contains one illegible digits, but no alternative") {
     expect({
       "    _  _  _  _  _  _     _ ",
       "|_||_|| || ||_   |  |  | _ ",
@@ -104,7 +105,7 @@ FIXTURE(AccountTest) {
     });
   }
 
-  TEST("it contains only 8 digits, and will append missing spaces at end lines") {
+  TEST("8 digits and will append missing spaces at end lines") {
     expect({
       "    _  _     _  _  _  _ ",
       "  | _| _||_||_ |_   ||_|",

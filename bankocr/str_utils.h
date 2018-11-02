@@ -5,24 +5,23 @@
 
 namespace str_utils {
 
-using string_size_t = std::string::size_type;
+using ssize_t = std::string::size_type;
 
-std::string rtrim(const std::string&, string_size_t = 0);
+std::string rtrim(const std::string&, ssize_t from = 0);
 int diff(const std::string&, const std::string&);
 
 template <typename F>
-void foreach(const std::string& s, F f, int step = 1) {
-  for (string_size_t i = 0; i != s.size(); i += step) {
+void foreach(const std::string& s, F f, ssize_t step = 1) {
+  for (ssize_t i = 0; i != s.size(); i += step) {
     f(s[i], i);
   }
 }
 
 template <typename Iterator>
-std::string join(Iterator begin, Iterator end, const char* sep) {
+std::string join(Iterator beg, Iterator end, const char* sep) {
   std::stringstream ss;
-  for (auto first = true; begin != end; ++begin) {
-    ss << (first ? (first = false, "") : sep)
-       << *begin;
+  for (auto first = true; beg != end; ++beg) {
+    ss << (first ? (first = false, "") : sep) << *beg;
   }
   return ss.str();
 }
